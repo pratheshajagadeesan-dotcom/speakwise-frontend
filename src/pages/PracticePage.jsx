@@ -1,37 +1,38 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import api from "../services/api";
 import QuestionCard from "../components/QuestionCard";
 
 function PracticePage() {
 
-    const questions = [
-        {
-            id: 1,
-            title: "Tell me about yourself",
-            description: "Introduce yourself in an interview."
-        },
-        {
-            id: 2,
-            title: "Why should we hire you?",
-            description: "Explain why you are suitable."
-        },
-        {
-            id: 3,
-            title: "What are your strengths?",
-            description: "Describe your strengths."
-        },
-        {
-            id: 4,
-            title: "What are your weaknesses?",
-            description: "Describe your weaknesses."
-        },
-        {
-            id: 5,
-            title: "Where do you see yourself in 5 years?",
-            description: "Talk about your future goals."
-        }
-    ];
+    const [questions, setQuestions] = useState([]);
+
 
     const [selectedQuestion, setSelectedQuestion] = useState(null);
+
+    const [loading, setLoading] = useState(true);
+
+    const [error, setError] = useState("");
+
+    useEffect(() => {
+        api.get("/questions")
+            .then((response) => {
+                setQuestions(response.data);
+                setLoading(false);
+            })
+            .catch((error) => {
+                console.error(error);
+                setError("Failed to load questions.");
+                setLoading(false);
+            });
+    }, []);
+
+    if (loading) {
+        return <h2>Loading...</h2>;
+    }
+
+    if (error) {
+        return <h2>{error}</h2>;
+    }
 
     return (
         <div>
